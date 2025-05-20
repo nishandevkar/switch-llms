@@ -1,9 +1,10 @@
-import ChatInput from "./components/ChatInput"
-import MUIButtonTest from "./components/MUIButtonTest"
+
+import ChatPage from "./components/ChatPage"
+
 const App = () => {
   return (
-    <div >
-      <ChatInput></ChatInput>
+    <div>
+      <ChatPage></ChatPage>
     </div>
 
   )

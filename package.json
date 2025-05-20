@@ -5,6 +5,7 @@
     "@fontsource/roboto": "^5.2.5",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
+    "react-hook-form": "^7.56.4",
     "vite": "^6.3.5"
   }
 }
