@@ -1,5 +1,6 @@
+import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-
+import ReactMarkdown from "react-markdown";
 
 interface GeminiResponseProps{
   message: string;
@@ -48,7 +49,19 @@ const GeminiResponse = (geminiResponse: GeminiResponseProps) => {
 
   return (
     <>
-      <p>{response}</p>
+      <Box
+      sx={{
+        '& *': {
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+        },
+        '& pre, & code': {
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+        },
+      }}>
+        <ReactMarkdown>{response}</ReactMarkdown>
+      </Box>
     </>
   );
 };
