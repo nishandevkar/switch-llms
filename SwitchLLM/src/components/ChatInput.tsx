@@ -2,6 +2,7 @@ import { Box, IconButton, InputAdornment } from '@mui/material';
 import {useForm} from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 import SendIcon from '@mui/icons-material/Send';
+import { useEffect, useState } from 'react';
 type FormData = {
     chatInput: string;
   };
