@@ -3,15 +3,9 @@ import ChatInput from './ChatInput';
 import ResponseSpace from './ResponseSpace';
 import { fetchGeminiMessage } from './fetchGeminiMessage.ts';
 import { fetchGroqMessage } from './fetchGroqMessages.ts';
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Typography,
-} from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material/Select';
+import { Label } from './ui/label.tsx';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select.tsx';
+import { Card } from './ui/card';
 
 export type MessagePair = {
   user: string;
@@ -22,17 +16,11 @@ export type MessagePair = {
 const ChatPage = () => {
   const [chatHistory, setChatHistory] = useState<MessagePair[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [llmModel, setLLMModel] = useState('gemini'); // default to Gemini
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setLLMModel(event.target.value);
-  };
+  const [llmModel, setLLMModel] = useState('gemini');
 
   const handleSendMessage = async (msg: string) => {
     setIsLoading(true);
-
-    // Add the user's message with an empty bot response
-    setChatHistory((prev) => [...prev, { user: msg, bot: '', model: llmModel }]);
+    setChatHistory(prev => [...prev, { user: msg, bot: '', model: llmModel }]);
 
     try {
       let response = '';
@@ -44,14 +32,14 @@ const ChatPage = () => {
         response = 'Invalid model selected';
       }
 
-      setChatHistory((prev) => {
+      setChatHistory(prev => {
         const updated = [...prev];
         updated[updated.length - 1] = { user: msg, bot: response, model: llmModel };
         return updated;
       });
     } catch (error) {
       console.error('Error fetching response:', error);
-      setChatHistory((prev) => {
+      setChatHistory(prev => {
         const updated = [...prev];
         updated[updated.length - 1] = { user: msg, bot: 'Error occurred', model: llmModel };
         return updated;
@@ -63,34 +51,26 @@ const ChatPage = () => {
 
   return (
     <>
-      <Box sx={{
-        // position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bgcolor: 'background.paper',
-        px: 1,
-        py: 1,
-        boxSizing: 'border-box',
-    
-      }}>
-        <FormControl fullWidth>
-          <InputLabel id="select-model-label">Select Model</InputLabel>
-          <Select
-            labelId="select-model-label"
-            id="select-model"
-            value={llmModel}
-            label="LLM Model"
-            onChange={handleChange}
-          >
-            <MenuItem value="groq">LLaMa (Groq)</MenuItem>
-            <MenuItem value="gemini">Gemini</MenuItem>
+      <Card className="w-2xl p-4 my-4 mx-auto">
+        <div className="space-y-2">
+          <Label htmlFor="select-model">Select Model</Label>
+          <Select value={llmModel} onValueChange={setLLMModel}>
+            <SelectTrigger id="select-model" className="w-full">
+              <SelectValue placeholder="Select a model" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem  value="groq">LLaMa (Groq)</SelectItem>
+              <SelectItem  value="gemini">Gemini</SelectItem>
+            </SelectContent>
           </Select>
-        </FormControl>
-      </Box>
+        </div>
+      </Card>
 
-      <ResponseSpace chatHistory={chatHistory} isLoading={isLoading} />
-      <ChatInput onSend={handleSendMessage} />
+      {chatHistory.length>0 && <Card className='w-2xl p-4 my-2 mx-auto overflow-y-auto'>
+        <ResponseSpace chatHistory={chatHistory} isLoading={isLoading} />
+      </Card>}
+        <ChatInput onSend={handleSendMessage} />
+
     </>
   );
 };

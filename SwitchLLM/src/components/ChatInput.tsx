@@ -1,57 +1,47 @@
-import { Box, IconButton, InputAdornment } from '@mui/material';
-import {useForm} from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-import SendIcon from '@mui/icons-material/Send';
-import { useEffect, useState } from 'react';
-type FormData = {
-    chatInput: string;
-  };
-const ChatInput = ({ onSend }: { onSend: (message: string) => void }) => {
+import { useForm } from "react-hook-form";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Send } from "lucide-react";
+import { useEffect } from "react";
 
-    const {register,handleSubmit, formState: {errors}, reset} = useForm<FormData>();
-    const onSubmit = (data: FormData) => {
-        onSend(data.chatInput);     // 🔼 Lift state up
-        reset(); 
-      };
+type FormData = {
+  chatInput: string;
+};
+
+const ChatInput = ({ onSend }: { onSend: (message: string) => void }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>();
+
+  const onSubmit = (data: FormData) => {
+    onSend(data.chatInput);
+    reset();
+  };
 
   return (
-   
-      <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        bgcolor: 'background.paper',
-        px: 1,
-        py: 1,
-        boxSizing: 'border-box',
-    
-      }}>
-        <TextField
-  fullWidth
-  {...register('chatInput', { required: 'Type something...' })}
-  error={!!errors.chatInput}
-  id="filled-search"
-  label="Type here..."
-  type="search"
-  variant="filled"
-  margin="normal"
-  size="small"
-  helperText={errors.chatInput?.message}
-  InputProps={{
-    endAdornment: (
-      <InputAdornment position="end">
-        <IconButton type="submit" color="primary">
-          <SendIcon />
-        </IconButton>
-      </InputAdornment>
-    ),
-  }}
-/>
-      </Box>
-        
-    
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="sticky w-2xl bg-background p-4 mb-2 m-auto flex items-center gap-2"
+    >
+      <div className="flex-1 relative">
+        <Input
+          type="text"
+          placeholder="Type here..."
+          {...register("chatInput", { required: "Type something..." })}
+          className={`pr-10 ${errors.chatInput ? "border-destructive" : ""}`}
+        />
+        {errors.chatInput && (
+          <p className="text-sm text-destructive mt-1">{errors.chatInput.message}</p>
+        )}
+      </div>
+      <Button type="submit" size="icon" variant="default" className="shrink-0">
+        <Send className="w-4 h-4" />
+      </Button>
+    </form>
   );
-}
+};
 
-export default ChatInput
+export default ChatInput;

@@ -1,110 +1,57 @@
-import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import type { MessagePair } from "./ChatPage";
+import { Card } from "./ui/card";
+
 interface ResponseSpaceProps {
   chatHistory: MessagePair[];
-  isLoading?: boolean; // Optional prop for loading state
+  isLoading?: boolean;
 }
+
 const ResponseSpace = ({ chatHistory, isLoading }: ResponseSpaceProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
-   const getBubbleColor = (model: string) =>
-    model === "groq" 
-  ? "#d2f8d2"  
-  : "#d2e3f8"; 
-  // Scroll to bottom when messages change
+  const getBubbleColor = (model: string) =>
+    model === "groq" ? "bg-green-100" : "bg-blue-100";
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
-  return (
-    <Box
-      sx={{
-        p: 2,
-        mb: 10,
-        overflowY: "auto",
-        maxHeight: "calc(100vh - 150px)",
-        display: "flex",
-        flexDirection: "column",
-        gap: 1,
 
-      }}
-    >
-  {chatHistory.map((pair, index) => {
-  const bubbleColor = getBubbleColor(pair.model); 
   return (
-    <>
-      {/* User sent message bubble */}
-      <Box
-        key={index - 1}
-        sx={{
-          alignSelf: "flex-end", // Right align
-          maxWidth: "70%",
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 1.5,
-            bgcolor: "primary.main",
-            color: "primary.contrastText",
-            borderRadius: 2,
-            borderTopRightRadius: 0,
-          }}
-        >
-          <Typography variant="body1">{pair.user}</Typography>
-        </Paper>
-      </Box>
+    <div className="p-4 my-2 overflow-y-auto max-h-[calc(100vh-30vh)] flex flex-col gap-2">
+      {chatHistory.map((pair, index) => {
+        const bubbleColor = getBubbleColor(pair.model);
 
-      {/* LLM Response bubble */}
-      <Box
-        key={index + 1}
-        sx={{
-          alignSelf: "flex-start", // Right align
-          maxWidth: "70%",
-          wordWrap: 'break-word',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        <Paper
-          elevation={4}
-          sx={{
-            p: 1.5,
-            bgcolor: bubbleColor,
-            color: "primary",
-            borderRadius: 2,
-            borderTopRightRadius: 0,
-          }}
-        >
-          <Typography variant="body1">
-            <Box
-  sx={{
-    '& *': {
-      wordBreak: 'break-word',
-      overflowWrap: 'break-word',
-    },
-    '& pre, & code': {
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'break-word',
-    },
-  }}>
-    {chatHistory.length -1 === index && isLoading && (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'white' }}>
-      <CircularProgress size={20} thickness={4} />
-      <span>Bot is typing...</span>
-    </div>
-  )}
-    <ReactMarkdown>{pair.bot}</ReactMarkdown>
-  </Box>
-          </Typography>
-        </Paper>
-      </Box>
-    </>
-  );
-})}
-      
+        return (
+          <div key={index} className="flex flex-col gap-1">
+            {/* User Message */}
+            <div className="self-end max-w-[70%]">
+              <Card className="bg-gray-700 text-primary-foreground rounded-2xl rounded-tr-sm p-3 shadow-md">
+                <p className="text-base">{pair.user}</p>
+              </Card>
+            </div>
+
+            {/* Bot Response */}
+            <div className="self-start max-w-[70%] break-words whitespace-pre-wrap">
+              <Card className={`p-3 rounded-2xl rounded-tr-sm shadow-md ${bubbleColor}`}>
+                <div className="text-base space-y-2 break-words overflow-wrap-anywhere">
+                  {chatHistory.length - 1 === index && isLoading ? (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="h-4 w-4 border-2 border-t-2 border-t-muted-foreground rounded-full animate-spin" />
+                      <span>Bot is typing...</span>
+                    </div>
+                  ) : (
+                    <ReactMarkdown>{pair.bot}</ReactMarkdown>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </div>
+        );
+      })}
       <div ref={bottomRef} />
-    </Box>
+    </div>
   );
 };
 
